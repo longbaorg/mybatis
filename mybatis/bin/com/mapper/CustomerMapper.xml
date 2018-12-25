@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+ <mapper namespace="com.mapper.CustomerMapper">
+ 	<!-- 根据客户编号获取客户信息 -->
+ 	<select id="findCustomerById" parameterType="int" resultType="com.entity.Customer">
+ 		select * from t_customer where id = #{id}
+ 	</select>
+ 	
+ 	<select id="findCustomerlist" parameterType="com.entity.Customer"  resultType="com.entity.Customer">
+ 		select * from t_customer where username like '%${value}%' 
+ 	</select>
+ 	
+ 	<insert id="insertCustomer" parameterType="com.entity.Customer" >
+ 		insert into t_customer values(#{id},#{username},#{jobs},#{phone})
+ 	</insert>
+ 	
+ 	<update id="updateCustomer" parameterType="com.entity.Customer">
+ 		update t_customer set username=#{username} , jobs=#{jobs} , phone=#{phone}  where id=#{id}
+ 	</update>
+ 	
+ 	<delete id="deleteCustomer" parameterType="int">
+ 		 delete from t_customer where id=#{id}
+ 	</delete>
+ 	
+ 	<select id="selectLists" parameterType="com.entity.Customer" resultType="com.entity.Customer">
+ 		select * from t_customer
+ 	</select>
+
+
+	<!-- if元素的使用 -->
+ 	<select id="findActiveBlogif" resultType="Customer" parameterType="Customer">
+ 		select * from t_customer where 1=1
+ 		<if test="username !=null and username!=''">
+ 			<!--  and username like '%'+#{username}+'%'   SQLserver-->
+ 			and username like concat('%',#{username},'%')
+ 		</if>
+ 		<if test="jobs !=null and jobs!=''">
+ 			and jobs =#{jobs}
+ 		</if>
+	</select>
+	
+	 <!-- choose when otherwise元素的使用元素的使用            当哪儿项不为空查询哪儿一项-->
+ 	<select id="findActiveBlogchoose" resultType="com.entity.Customer" parameterType="com.entity.Customer">
+ 		select * from t_customer where 1=1
+ 		<choose>
+ 			<when test="username!=null and username!=''">
+ 			<!--  and username like '%'+#{username}+'%'   SQLserver-->
+ 				and username like concat('%',#{username},'%')
+ 			</when>
+ 			
+ 			<when test="jobs!=null and jobs!=''">
+ 				and jobs =#{jobs}
+ 			</when>
+ 			<otherwise>
+ 				and phone is not null
+ 			</otherwise>
+ 		</choose>
+	</select>
+	
+	<!-- set 元素  还会消除多余的逗号 -->
+	<update id="updateCustomerss" parameterType="com.entity.Customer">
+		update t_customer
+		<set>
+			<if test="username !=null and username!=''">
+				username =#{username},
+			</if>
+			<if test="jobs !=null and jobs!=''">
+				jobs =#{jobs},
+			</if>
+			<if test="phone !=null and phone!=''">
+				phone =#{phone},
+			</if>
+		</set>
+		where id=#{id}
+	</update>
+	
+	
+	<!-- foreach 元素  对传入的集合或数组进行遍历并重装          open属性注意空格-->
+	<select id="Customeforeach" parameterType="List" resultType="com.entity.Customer">
+		select * from t_customer where id in
+		<foreach collection="list" index="index" item="id" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</select>
+	
+	<!-- bind 元素  对传入的集合或数组进行遍历并重装          open属性注意空格-->
+	<select id="Customebind" parameterType="com.entity.Customer" resultType="com.entity.Customer">
+	<!-- parameter.getUsername也可以直接写成username -->
+		<bind name="pattern_username" value="'%'+_parameter.getUsername()+'%'"/>
+		select * from t_customer
+		where 
+		username like #{pattern_username}
+	</select>
+	
+		<!-- trim  where 鍏冪礌  杩樹細娑堥櫎澶氫綑鐨勯€楀彿 -->
+	<select id="selecttrim"  resultType="com.entity.Customer" parameterType="com.entity.Customer">
+		select * from t_customer 
+		<!-- <trim prefix="where" prefixOverrides="and"></trim> -->
+		<where>
+ 		<if test="username !=null and username!=''">
+ 			<!--  and username like '%'+#{username}+'%'   SQLserver-->
+ 			and username like concat('%',#{username},'%')
+ 		</if>
+ 		<if test="jobs !=null and jobs!=''">
+ 			and jobs =#{jobs}
+ 		</if>
+ 		</where>
+	</select>
+ </mapper>

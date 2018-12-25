@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="com.mapper.UserMapper">
+  
+ 	<!-- 根据客户编号获取客户信息 -->
+ 	<select id="findUserById" parameterType="Integer" resultMap="UserResultMap">
+ 		select tb_user.*,number,tb_orders.id ordersId
+ 		from tb_user , tb_orders
+ 		where tb_user.id = tb_orders.user_id and tb_user.id=#{id}
+ 	</select>
+ 	<resultMap type="User" id="UserResultMap">
+ 		<id property="id" column="id" />
+  		<result property="userName" column="username"/>
+  		<result property="address" column="address"/>
+  		
+  		<!--ofType:表示集合中的属性为Orders类型       property：实体类中的商品属性  -->
+  		
+  		<collection property="orderslist" ofType="Orders">
+  			<id property="id" column="ordersId"/>
+    		<result property="number" column="number"/>
+  		</collection>
+ 	</resultMap>
+</mapper>

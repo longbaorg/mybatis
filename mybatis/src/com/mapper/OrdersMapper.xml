@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="com.mapper.OrdersMapper">
+  
+ 	<!-- 根据客户编号获取客户信息 -->
+ 	<select id="findOrdersWithPorduct" parameterType="Integer" resultMap="OrdersWithPorductResult">
+ 		select o.*,p.id as pid,p.name,p.price
+		from tb_orders o,tb_product p ,tb_ordersitem oi
+		where oi.orders_id=o.id
+		and oi.product_id=p.id
+		and o.id=#{id}
+ 	</select>
+ 	
+ 	<!-- 对应上面select查询出来的字段名称与实体类的对应 -->
+ 	<resultMap type="Orders" id="OrdersWithPorductResult">
+ 		<id property="id" column="id" />
+  		<result property="number" column="number"/>
+  		<collection property="product" ofType="Product">
+  			<id property="id" column="pid"/>
+    		<result property="name" column="name"/>
+    		<result property="price" column="price"/>
+  		</collection>
+ 	</resultMap>
+</mapper>

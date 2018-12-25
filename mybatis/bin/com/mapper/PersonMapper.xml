@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace="com.mapper.PersonMapper">
+  
+ 	<!-- 根据客户编号获取客户信息 -->
+ 	<select id="findPersonById" parameterType="Integer" resultMap="personResultMap">
+ 		select * from tb_person where id = #{id}
+ 	</select>
+ 	
+ 	<resultMap id="personResultMap" type="Person">
+  		<id property="id" column="id" />
+  		<result property="name" column="name"/>
+  		<result property="age" column="age"/>
+  		<result property="sex" column="sex"/>
+  		<association property="cardId" column="card_id" javaType="com.entity.IdCard" select="com.mapper.IdCardMapper.findCodeById"/>
+	</resultMap>
+	
+	<!-- 嵌套结果 -->
+	 <select id="findPersonById2" parameterType="Integer" resultMap="personResultMap2">
+ 		select person.* , idcard.id cardid , idcard.code 
+		from tb_idcard idcard, tb_person person
+ 		where card_id = idcard.id and person.id=#{id}
+ 	</select>
+ 	
+ 	<resultMap id="personResultMap2" type="Person">
+  		<id property="id" column="id" />
+  		<result property="name" column="name"/>
+  		<result property="age" column="age"/>
+  		<result property="sex" column="sex"/>
+  		<association property="cardId" javaType="IdCard">
+    		<id property="id" column="cardid"/>
+    		<result property="code" column="code"/>
+  		</association>
+	</resultMap>
+</mapper>
